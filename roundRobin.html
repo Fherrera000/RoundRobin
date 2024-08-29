@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- Simulacion del algoritmo de Round Robin-->
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/style.css" rel="stylesheet">
+    <title>Round Robin</title>
+    <style>
+        .encabezado-img {
+            background-image: url(https://fastly.picsum.photos/id/853/200/200.jpg?hmac=f4LF-tVBBnJb9PQAVEO8GCTGWgLUnxQLw44rUofE6mQ);
+            background-size: cover;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1c1a1a;
+            text-align: center;
+        }
+
+        .encabezado-img p {
+            font-size: 18px;
+        }
+
+        .encabezado-img h1 {
+            font-size: 50px;
+            padding: 15px 0;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 50px auto;
+            padding: 0 20px;
+            max-width: 1200px;
+        }
+
+        .card {
+            flex: 1 1 calc(25% - 40px);
+            background-color: white;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 20px;
+            max-width: 300px;
+        }
+
+        .card-content {
+            padding: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                flex: 1 1 calc(10% - 100px);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                flex: 1 1 calc(100% - 20px);
+            }}
+    </style>
+</head>
+<body>
+
+    <div class="encabezado-img">
+		<h1>Round Robin</h1>
+	</div>
+
+    <div class="cards">
+        <div id="cards-container" class="card-container"></div>
+    </div>
+
+    <script lang="javascript">
+        let lineasDeCodigo = [
+            'a = 1 + 2;',
+            'console.log("1 + 2");',
+            'b = 3 + 4;',
+            'console.log("3 + 4");',
+            'c = 5 + 6;',
+            'console.log("5 + 6");',
+            'd = 7 + 8;',
+            'console.log("7 + 8");',
+            'console.log(a);',
+            'console.log(b);',
+            'console.log(c);',
+            'console.log(d);',
+        ];
+
+        function getRandom() {
+            let indice = Math.floor(Math.random() * lineasDeCodigo.length);
+            return lineasDeCodigo[indice];
+        }
+
+        function crearProceso(id) {
+            return {
+                id: id,
+                codigo: [
+                    getRandom(),
+                    getRandom(),
+                    getRandom(),
+                ],
+                lineaActual: 0,
+            };
+        }
+
+        function ejecutarProceso(proceso) {
+            if (proceso.lineaActual < proceso.codigo.length) {
+                return `Línea de código: ${proceso.codigo[proceso.lineaActual++]}`;
+            } else {
+                return null;
+            }
+        }
+
+        function inicioProcesos(numProcesos) {
+            let procesos = [];
+            for (let i = 1; i <= numProcesos; i++) {
+                procesos.push(crearProceso(i));
+            }
+            return procesos;
+        }
+
+        let numProcesos = prompt("Número de procesos a realizar", 3);
+        numProcesos = parseInt(numProcesos);
+
+        let procesos = inicioProcesos(numProcesos);
+        let terminar = false;
+        let cardsContainer = document.getElementById('cards-container');
+
+        while (terminar == false) {
+            terminar = true;
+            for (let proceso of procesos) {
+                let cardId = `card-${proceso.id}`;
+                let card = document.getElementById(cardId);
+
+                if (!card) {
+                    card = document.createElement('div');
+                    card.className = 'card';
+                    card.id = cardId;
+                    card.innerHTML = `
+                        <div class="card-body">
+                            <h5 class="card-title">Proceso ${proceso.id}</h5>
+                            <p class="card-text" id="card-content-${proceso.id}"></p>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                }
+
+                if (proceso.lineaActual < proceso.codigo.length) {
+                    document.getElementById(`card-content-${proceso.id}`).innerText += ejecutarProceso(proceso) + '\n';
+                    terminar = false;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
